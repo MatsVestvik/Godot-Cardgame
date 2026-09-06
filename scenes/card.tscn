@@ -44,8 +44,5 @@ texture = SubResource("AtlasTexture_kg30u")
 [node name="Suit" type="Sprite2D" parent="." unique_id=372926497]
 texture = SubResource("AtlasTexture_ktuci")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=2116276770]
-zoom = Vector2(6, 6)
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1008743766]
 shape = SubResource("RectangleShape2D_828cs")

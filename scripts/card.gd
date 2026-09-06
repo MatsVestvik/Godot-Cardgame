@@ -75,6 +75,13 @@ func _on_mouse_exited() -> void:
 		tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.08)
 
 func _make_textures_unique() -> void:
+	if base_sprite == null:
+		base_sprite = get_node_or_null("CardBase")
+	if rank_sprite == null:
+		rank_sprite = get_node_or_null("Rank")
+	if suit_sprite == null:
+		suit_sprite = get_node_or_null("Suit")
+
 	if base_sprite and base_sprite.texture:
 		base_sprite.texture = base_sprite.texture.duplicate()
 	if rank_sprite and rank_sprite.texture:
@@ -83,6 +90,13 @@ func _make_textures_unique() -> void:
 		suit_sprite.texture = suit_sprite.texture.duplicate()
 
 func setup_card(rank: Rank, suit: Suit, cardbase: CardBase) -> void:
+	if base_sprite == null:
+		base_sprite = get_node_or_null("CardBase")
+	if rank_sprite == null:
+		rank_sprite = get_node_or_null("Rank")
+	if suit_sprite == null:
+		suit_sprite = get_node_or_null("Suit")
+
 	_make_textures_unique()
 
 	var base_atlas := base_sprite.texture as AtlasTexture

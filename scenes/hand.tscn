@@ -4,12 +4,3 @@
 
 [node name="Hand" type="Node2D" unique_id=103100566]
 script = ExtResource("1_eyfoh")
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1608660176]
-zoom = Vector2(4, 4)
-
-[node name="Hand" type="HBoxContainer" parent="." unique_id=362417185]
-offset_left = -11.0
-offset_top = -9.0
-offset_right = 32.0
-offset_bottom = 25.0

@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://c6xk5t8rql6pn"]
+
+[ext_resource type="PackedScene" uid="uid://cb4bb1fh83ut2" path="res://scenes/deck.tscn" id="1_deck"]
+[ext_resource type="PackedScene" uid="uid://ku22yqqjt7nt" path="res://scenes/hand.tscn" id="2_hand"]
+
+[node name="Game" type="Node2D" unique_id=789844159]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=429066829]
+zoom = Vector2(4, 4)
+
+[node name="Deck" parent="." unique_id=1571640803 node_paths=PackedStringArray("target_hand") instance=ExtResource("1_deck")]
+position = Vector2(-100, 35)
+target_hand = NodePath("../Hand")
+
+[node name="Hand" parent="." unique_id=848955035 instance=ExtResource("2_hand")]
+position = Vector2(10, 35)

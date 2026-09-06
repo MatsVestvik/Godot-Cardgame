@@ -1,3 +1,31 @@
 [gd_scene format=3 uid="uid://cb4bb1fh83ut2"]
 
-[node name="Deck" type="Node2D" unique_id=590703217]
+[ext_resource type="Script" uid="uid://baggtqulty04u" path="res://scripts/deck.gd" id="1_deck_script"]
+[ext_resource type="Texture2D" uid="uid://dgf3b6t7bm7l6" path="res://assets/card/back.png" id="2_back_tex"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_deck"]
+size = Vector2(23, 32)
+
+[node name="Deck" type="Area2D" unique_id=590703217]
+script = ExtResource("1_deck_script")
+
+[node name="Shadow" type="Sprite2D" parent="." unique_id=892341001]
+modulate = Color(0, 0, 0, 0.25)
+position = Vector2(1, 1)
+texture = ExtResource("2_back_tex")
+
+[node name="StackCard2" type="Sprite2D" parent="." unique_id=892341002]
+modulate = Color(0.85, 0.85, 0.85, 1)
+position = Vector2(-1, -1)
+texture = ExtResource("2_back_tex")
+
+[node name="StackCard1" type="Sprite2D" parent="." unique_id=892341003]
+modulate = Color(0.92, 0.92, 0.92, 1)
+position = Vector2(0, -0.5)
+texture = ExtResource("2_back_tex")
+
+[node name="TopCard" type="Sprite2D" parent="." unique_id=892341004]
+texture = ExtResource("2_back_tex")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=892341005]
+shape = SubResource("RectangleShape2D_deck")
