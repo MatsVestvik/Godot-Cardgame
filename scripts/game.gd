@@ -18,9 +18,12 @@ func _ready() -> void:
 	var deck: Deck = get_node_or_null("Deck") as Deck
 	if deck and use_game_cards_deck and deck.custom_deck.is_empty():
 		var draw_res: CardResource = load("res://resources/cards/draw_card.tres")
+		var energy_res: CardResource = load("res://resources/cards/energy_card.tres")
 		var starter: Array[CardResource] = []
-		for i in range(starter_deck_size):
+		for i in range(8):
 			starter.append(draw_res)
+		for i in range(4):
+			starter.append(energy_res)
 		deck.custom_deck = starter
 		deck.generate_starter_deck()
 		deck.initial_deck_size = deck.get_remaining_count()

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CardResource" format=3]
+
+[ext_resource type="Script" path="res://scripts/effects/gain_energy_effect.gd" id="1_gain_energy"]
+[ext_resource type="Texture2D" path="res://assets/card/energy.png" id="2_energy_art"]
+[ext_resource type="Script" path="res://scripts/card_resource.gd" id="3_card_res"]
+
+[sub_resource type="Resource" id="Resource_gain_energy_effect"]
+script = ExtResource("1_gain_energy")
+amount = 1
+
+[resource]
+script = ExtResource("3_card_res")
+id = "energy_card"
+card_name = "Energy"
+energy_cost = 0
+art_texture = ExtResource("2_energy_art")
+description = "Gain 1 Energy. (Cap 9)"
+effects = [SubResource("Resource_gain_energy_effect")]
