@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://c17nwsuk1r3yn"]
+
+[ext_resource type="Script" uid="uid://5exbg628rd2i" path="res://scripts/card.gd" id="1_kg30u"]
+[ext_resource type="Texture2D" uid="uid://cmju7givk2v6k" path="res://assets/card/cardback.png" id="1_ktuci"]
+[ext_resource type="Texture2D" uid="uid://dqrafhsxv7y71" path="res://assets/card/rank.png" id="3_sy11y"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dn52r"]
+atlas = ExtResource("1_ktuci")
+region = Rect2(0, 0, 23, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8mu41"]
+atlas = ExtResource("1_ktuci")
+region = Rect2(0, 0, 23, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kg30u"]
+atlas = ExtResource("3_sy11y")
+region = Rect2(0, 0, 7, 5)
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_6u4wf"]
+load_path = "res://.godot/imported/suit.png-b5a8164193a97855a587c65892baf7c3.ctex"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ktuci"]
+atlas = SubResource("CompressedTexture2D_6u4wf")
+region = Rect2(0, 0, 7, 7)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_828cs"]
+size = Vector2(23, 32)
+
+[node name="Card" type="Area2D" unique_id=684410383]
+script = ExtResource("1_kg30u")
+
+[node name="Shadow" type="Sprite2D" parent="." unique_id=753428628]
+modulate = Color(0, 0, 0, 0.15686275)
+texture = SubResource("AtlasTexture_dn52r")
+offset = Vector2(-1, 1)
+
+[node name="CardBase" type="Sprite2D" parent="." unique_id=1397416903]
+texture = SubResource("AtlasTexture_8mu41")
+
+[node name="Rank" type="Sprite2D" parent="." unique_id=2048523341]
+position = Vector2(-7, -12)
+texture = SubResource("AtlasTexture_kg30u")
+
+[node name="Suit" type="Sprite2D" parent="." unique_id=372926497]
+texture = SubResource("AtlasTexture_ktuci")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=2116276770]
+zoom = Vector2(6, 6)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1008743766]
+shape = SubResource("RectangleShape2D_828cs")
