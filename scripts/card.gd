@@ -13,12 +13,18 @@ const SUIT_HEIGHT: float = 7.0
 enum Suit { CLUBS = 3, SPADES = 1, HEARTS = 0, DIAMONDS = 2 }
 enum Rank { TWO = 0, THREE = 1, FOUR = 2, FIVE = 3, SIX = 4, SEVEN = 5, EIGHT = 6, NINE = 7, TEN = 8, JACK = 9, QUEEN = 10, KING = 11, ACE = 12 }
 enum CardBase { WHITE = 0, GREEN = 1, RED = 2, BLUE = 3 }
+enum State { IN_HAND, ON_TABLE }
+
+signal card_played(card: Card)
+signal drag_started(card: Card)
+signal drag_ended(card: Card)
 
 @onready var base_sprite: Sprite2D = $CardBase
 @onready var rank_sprite: Sprite2D = $Rank
 @onready var suit_sprite: Sprite2D = $Suit
 
 # Interaction state variables
+var state: State = State.IN_HAND
 var is_hovered: bool = false
 var is_dragging: bool = false
 var drag_offset: Vector2 = Vector2.ZERO
@@ -46,21 +52,39 @@ func _input(event: InputEvent) -> void:
 func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
-			_pickup_card()
+			if state == State.IN_HAND:
+				_pickup_card()
 
 func _pickup_card() -> void:
 	is_dragging = true
 	resting_position = global_position
 	drag_offset = get_global_mouse_position() - global_position
 	z_index = 100  # Ensure card renders on top while dragging
+	drag_started.emit(self)
 
 func _drop_card() -> void:
 	is_dragging = false
+	drag_ended.emit(self)
+
+	# Check if dropped onto the table play area
+	var table: Table = _find_table()
+	if table != null and state == State.IN_HAND and table.can_accept_card(self, global_position):
+		table.play_card(self)
+		card_played.emit(self)
+		return
+
+	# Fallback: slide back into resting slot in hand
 	z_index = base_z_index
-	
-	# Smoothly slide the card back into its resting slot
 	var tween := create_tween()
 	tween.tween_property(self, "global_position", resting_position, 0.15).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+func _find_table() -> Table:
+	var tree := get_tree()
+	if tree != null:
+		var found = tree.root.find_child("Table", true, false)
+		if found is Table:
+			return found
+	return null
 
 func _on_mouse_entered() -> void:
 	is_hovered = true

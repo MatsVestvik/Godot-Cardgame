@@ -1,0 +1,13 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/table.gd" id="1_table"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_table"]
+size = Vector2(220, 50)
+
+[node name="Table" type="Area2D" unique_id=712491201]
+script = ExtResource("1_table")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=712491202]
+position = Vector2(0, -10)
+shape = SubResource("RectangleShape2D_table")

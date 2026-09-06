@@ -26,6 +26,11 @@ func add_card(card: Card) -> void:
 			add_child(card)
 	update_hand_layout()
 
+func remove_card(card: Card) -> void:
+	if card.get_parent() == self:
+		remove_child(card)
+	update_hand_layout()
+
 func spawn_card(rank: Card.Rank, suit: Card.Suit, cardbase: Card.CardBase = Card.CardBase.WHITE) -> Card:
 	var new_card: Card = CARD_SCENE.instantiate()
 	add_child(new_card)
