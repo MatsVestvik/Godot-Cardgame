@@ -4,29 +4,99 @@ extends Area2D
 signal card_drawn(card: Card, card_data: CardData)
 
 const CARD_SCENE: PackedScene = preload("res://scenes/card.tscn")
+const CARD_WIDTH: float = 23.0
+const CARD_HEIGHT: float = 32.0
 
 @export var target_hand: Hand
 @export var can_draw: bool = true
+@export var auto_recycle: bool = false
+@export var max_stack_height: int = 7
+@export var show_card_counter: bool = true
+
+@onready var top_card_sprite: Sprite2D = $TopCard
+@onready var shadow_sprite: Sprite2D = $Shadow
+@onready var stack_layers_container: Node2D = $StackLayers
+@onready var count_label: Label = get_node_or_null("CountLabel")
 
 var draw_pile: Array[CardData] = []
 var discard_pile: Array[CardData] = []
+var initial_deck_size: int = 52
+var current_stack_height: int = 7
+var stack_sprites: Array[Sprite2D] = []
 var is_hovered: bool = false
 
 func _ready() -> void:
-	# Connect built-in Area2D signals
 	input_event.connect(_on_input_event)
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
 
 	generate_starter_deck()
+	initial_deck_size = draw_pile.size()
 	shuffle_draw_pile()
+	_setup_stack_layers()
+	update_stack_visual(false)
 
-	# Auto-discover hand in scene tree if not explicitly assigned
 	if target_hand == null:
 		_find_target_hand()
 
+func _draw() -> void:
+	if draw_pile.is_empty():
+		var rect := Rect2(-CARD_WIDTH / 2.0, -CARD_HEIGHT / 2.0, CARD_WIDTH, CARD_HEIGHT)
+		draw_rect(rect, Color(1, 1, 1, 0.04), true)
+		draw_rect(rect, Color(1, 1, 1, 0.25), false, 1.0)
+
+func _setup_stack_layers() -> void:
+	if stack_layers_container == null:
+		return
+	for child in stack_layers_container.get_children():
+		child.queue_free()
+	stack_sprites.clear()
+
+	var tex: Texture2D = top_card_sprite.texture if top_card_sprite else null
+	for i in range(1, max_stack_height + 1):
+		var spr := Sprite2D.new()
+		spr.texture = tex
+		spr.position = Vector2(0, -i)
+		var shade: float = lerpf(0.72, 0.94, float(i) / float(max_stack_height))
+		spr.modulate = Color(shade, shade, shade, 1.0)
+		stack_layers_container.add_child(spr)
+		stack_sprites.append(spr)
+
+func update_stack_visual(animate: bool = true) -> void:
+	var remaining := draw_pile.size()
+
+	if count_label != null:
+		count_label.visible = show_card_counter
+		count_label.text = str(remaining)
+
+	queue_redraw()
+
+	if remaining == 0:
+		current_stack_height = 0
+		if top_card_sprite: top_card_sprite.visible = false
+		if shadow_sprite: shadow_sprite.visible = false
+		if stack_layers_container: stack_layers_container.visible = false
+		return
+
+	if top_card_sprite: top_card_sprite.visible = true
+	if shadow_sprite: shadow_sprite.visible = true
+	if stack_layers_container: stack_layers_container.visible = true
+
+	var target_height: int = max(1, int(ceil((float(remaining) / float(initial_deck_size)) * float(max_stack_height))))
+	current_stack_height = target_height
+
+	for i in range(stack_sprites.size()):
+		stack_sprites[i].visible = (i + 1) < target_height
+
+	var target_pos := Vector2(0, -target_height)
+	if top_card_sprite:
+		if animate:
+			var tween := create_tween()
+			tween.tween_property(top_card_sprite, "position", target_pos, 0.15).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		else:
+			top_card_sprite.position = target_pos
+
 func _find_target_hand() -> void:
-	# Try finding Hand in tree
 	var tree := get_tree()
 	if tree != null:
 		var found = tree.root.find_child("Hand", true, false)
@@ -63,7 +133,6 @@ func _play_empty_deck_animation() -> void:
 	tween.tween_property(self, "position", orig_pos + Vector2(-2, 0), 0.04)
 	tween.tween_property(self, "position", orig_pos, 0.04)
 
-# 1. Build standard 52-card deck
 func generate_starter_deck() -> void:
 	draw_pile.clear()
 	discard_pile.clear()
@@ -72,17 +141,15 @@ func generate_starter_deck() -> void:
 		for rank in Card.Rank.values():
 			draw_pile.append(CardData.new(rank, suit, Card.CardBase.WHITE))
 
-# 2. Shuffle draw pile
 func shuffle_draw_pile() -> void:
 	draw_pile.shuffle()
 
-# 3. Reshuffle discard into draw when empty
 func recycle_discard_into_draw() -> void:
 	draw_pile.append_array(discard_pile)
 	discard_pile.clear()
 	shuffle_draw_pile()
+	update_stack_visual(true)
 
-# 4. Draw a single card into the hand
 func draw_card() -> Card:
 	if target_hand == null:
 		_find_target_hand()
@@ -91,25 +158,27 @@ func draw_card() -> Card:
 			return null
 
 	if draw_pile.is_empty():
-		if discard_pile.is_empty():
+		if auto_recycle and not discard_pile.is_empty():
+			recycle_discard_into_draw()
+		else:
 			print("No cards left to draw!")
 			_play_empty_deck_animation()
 			return null
-		recycle_discard_into_draw()
 
 	var next_card_data: CardData = draw_pile.pop_back()
 	var new_card: Card = CARD_SCENE.instantiate()
 
-	# Start card at Deck's world position so it flies into hand
-	new_card.global_position = global_position
+	# Start card at current top of stack in world coordinates
+	var spawn_pos: Vector2 = top_card_sprite.global_position if (top_card_sprite and top_card_sprite.visible) else global_position
+	new_card.global_position = spawn_pos
 	new_card.setup_card(next_card_data.rank, next_card_data.suit, next_card_data.cardbase)
 
 	target_hand.add_card(new_card)
+	update_stack_visual(true)
 	card_drawn.emit(new_card, next_card_data)
 
 	return new_card
 
-# 5. Draw multiple cards (e.g. at round start)
 func draw_hand(amount: int) -> void:
 	for i in range(amount):
 		draw_card()

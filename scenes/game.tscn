@@ -14,7 +14,7 @@ zoom = Vector2(4, 4)
 position = Vector2(0, -15)
 
 [node name="Deck" parent="." unique_id=1571640803 node_paths=PackedStringArray("target_hand") instance=ExtResource("1_deck")]
-position = Vector2(-100, 35)
+position = Vector2(-127, 24)
 target_hand = NodePath("../Hand")
 
 [node name="Hand" parent="." unique_id=848955035 instance=ExtResource("2_hand")]
