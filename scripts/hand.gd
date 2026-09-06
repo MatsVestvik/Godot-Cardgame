@@ -3,22 +3,22 @@ extends Node2D
 
 const CARD_SCENE: PackedScene = preload("res://scenes/card.tscn")
 
-@export var max_hand_width: float = 170.0  # Maximum total pixel width the hand can span
-@export var default_spacing: float = 26.0  # Normal spacing when holding few cards
+@export var max_hand_width: float = 240.0  # Maximum total pixel width the hand can span
+@export var default_spacing: float = 34.0  # Normal spacing when holding few cards
 @export var initial_cards: int = 0         # Number of random cards to deal on ready
 
 func _ready() -> void:
 	for i in range(initial_cards):
 		deal_random_card()
 
-func get_cards() -> Array[Card]:
-	var cards: Array[Card] = []
+func get_cards() -> Array[Node2D]:
+	var cards: Array[Node2D] = []
 	for child in get_children():
-		if child is Card:
+		if child is Card or child is GameCard:
 			cards.append(child)
 	return cards
 
-func add_card(card: Card) -> void:
+func add_card(card: Node2D) -> void:
 	if card.get_parent() != self:
 		if card.get_parent() != null:
 			card.reparent(self)
@@ -26,7 +26,7 @@ func add_card(card: Card) -> void:
 			add_child(card)
 	update_hand_layout()
 
-func remove_card(card: Card) -> void:
+func remove_card(card: Node2D) -> void:
 	if card.get_parent() == self:
 		remove_child(card)
 	update_hand_layout()
@@ -39,7 +39,7 @@ func spawn_card(rank: Card.Rank, suit: Card.Suit, cardbase: Card.CardBase = Card
 	return new_card
 
 func update_hand_layout() -> void:
-	var cards: Array[Card] = get_cards()
+	var cards: Array[Node2D] = get_cards()
 	var total_cards: int = cards.size()
 	if total_cards == 0:
 		return
@@ -53,7 +53,7 @@ func update_hand_layout() -> void:
 	var start_x: float = -total_span / 2.0
 
 	for i in range(total_cards):
-		var card: Card = cards[i]
+		var card: Node2D = cards[i]
 		var target_pos := Vector2(start_x + (i * spacing), 0.0)
 		card.z_index = i
 		card.base_z_index = i

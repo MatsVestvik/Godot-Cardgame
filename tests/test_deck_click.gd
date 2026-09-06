@@ -30,7 +30,7 @@ func _run_test() -> void:
 	# Verify card was drawn as a result of click
 	assert(hand.get_cards().size() == 1, "Clicking deck should draw 1 card into hand")
 	var card = hand.get_cards()[0]
-	assert(card is Card, "Drawn node should be a Card")
+	assert(card is Card or card is GameCard, "Drawn node should be a Card or GameCard")
 	print("Click successfully drew card: ", card)
 
 	# Simulate hover

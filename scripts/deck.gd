@@ -1,9 +1,11 @@
 class_name Deck
 extends Area2D
 
-signal card_drawn(card: Card, card_data: CardData)
+signal card_drawn(card: Node2D, card_info: Variant)
 
 const CARD_SCENE: PackedScene = preload("res://scenes/card.tscn")
+const STANDARD_CARD_SCENE: PackedScene = preload("res://scenes/card.tscn")
+const GAME_CARD_SCENE: PackedScene = preload("res://scenes/gameCard.tscn")
 const CARD_WIDTH: float = 23.0
 const CARD_HEIGHT: float = 32.0
 
@@ -12,6 +14,7 @@ const CARD_HEIGHT: float = 32.0
 @export var auto_recycle: bool = false
 @export var max_stack_height: int = 7
 @export var show_card_counter: bool = true
+@export var custom_deck: Array[CardResource] = []
 
 @onready var top_card_sprite: Sprite2D = $TopCard
 @onready var shadow_sprite: Sprite2D = $Shadow
@@ -19,7 +22,8 @@ const CARD_HEIGHT: float = 32.0
 @onready var count_label: Label = get_node_or_null("CountLabel")
 
 var draw_pile: Array[CardData] = []
-var discard_pile: Array[CardData] = []
+var custom_draw_pile: Array[CardResource] = []
+var discard_pile: Array[Variant] = []
 var initial_deck_size: int = 52
 var current_stack_height: int = 7
 var stack_sprites: Array[Sprite2D] = []
@@ -31,7 +35,7 @@ func _ready() -> void:
 	mouse_exited.connect(_on_mouse_exited)
 
 	generate_starter_deck()
-	initial_deck_size = draw_pile.size()
+	initial_deck_size = get_remaining_count()
 	shuffle_draw_pile()
 	_setup_stack_layers()
 	update_stack_visual(false)
@@ -39,8 +43,11 @@ func _ready() -> void:
 	if target_hand == null:
 		_find_target_hand()
 
+func get_remaining_count() -> int:
+	return custom_draw_pile.size() + draw_pile.size()
+
 func _draw() -> void:
-	if draw_pile.is_empty():
+	if get_remaining_count() == 0:
 		var rect := Rect2(-CARD_WIDTH / 2.0, -CARD_HEIGHT / 2.0, CARD_WIDTH, CARD_HEIGHT)
 		draw_rect(rect, Color(1, 1, 1, 0.04), true)
 		draw_rect(rect, Color(1, 1, 1, 0.25), false, 1.0)
@@ -63,7 +70,7 @@ func _setup_stack_layers() -> void:
 		stack_sprites.append(spr)
 
 func update_stack_visual(animate: bool = true) -> void:
-	var remaining := draw_pile.size()
+	var remaining := get_remaining_count()
 
 	if count_label != null:
 		count_label.visible = show_card_counter
@@ -135,29 +142,39 @@ func _play_empty_deck_animation() -> void:
 
 func generate_starter_deck() -> void:
 	draw_pile.clear()
+	custom_draw_pile.clear()
 	discard_pile.clear()
 
-	for suit in Card.Suit.values():
-		for rank in Card.Rank.values():
-			draw_pile.append(CardData.new(rank, suit, Card.CardBase.WHITE))
+	if not custom_deck.is_empty():
+		for res in custom_deck:
+			custom_draw_pile.append(res)
+	else:
+		for suit in Card.Suit.values():
+			for rank in Card.Rank.values():
+				draw_pile.append(CardData.new(rank, suit, Card.CardBase.WHITE))
 
 func shuffle_draw_pile() -> void:
 	draw_pile.shuffle()
+	custom_draw_pile.shuffle()
 
 func recycle_discard_into_draw() -> void:
-	draw_pile.append_array(discard_pile)
+	for item in discard_pile:
+		if item is CardResource:
+			custom_draw_pile.append(item)
+		elif item is CardData:
+			draw_pile.append(item)
 	discard_pile.clear()
 	shuffle_draw_pile()
 	update_stack_visual(true)
 
-func draw_card() -> Card:
+func draw_card() -> Node2D:
 	if target_hand == null:
 		_find_target_hand()
 		if target_hand == null:
 			push_warning("Deck: No target Hand assigned or found in scene!")
 			return null
 
-	if draw_pile.is_empty():
+	if get_remaining_count() == 0:
 		if auto_recycle and not discard_pile.is_empty():
 			recycle_discard_into_draw()
 		else:
@@ -165,19 +182,26 @@ func draw_card() -> Card:
 			_play_empty_deck_animation()
 			return null
 
-	var next_card_data: CardData = draw_pile.pop_back()
-	var new_card: Card = CARD_SCENE.instantiate()
-
-	# Start card at current top of stack in world coordinates
 	var spawn_pos: Vector2 = top_card_sprite.global_position if (top_card_sprite and top_card_sprite.visible) else global_position
-	new_card.global_position = spawn_pos
-	new_card.setup_card(next_card_data.rank, next_card_data.suit, next_card_data.cardbase)
 
-	target_hand.add_card(new_card)
-	update_stack_visual(true)
-	card_drawn.emit(new_card, next_card_data)
-
-	return new_card
+	if not custom_draw_pile.is_empty():
+		var next_res: CardResource = custom_draw_pile.pop_back()
+		var new_card: GameCard = GAME_CARD_SCENE.instantiate()
+		new_card.global_position = spawn_pos
+		new_card.setup_card(next_res)
+		target_hand.add_card(new_card)
+		update_stack_visual(true)
+		card_drawn.emit(new_card, next_res)
+		return new_card
+	else:
+		var next_card_data: CardData = draw_pile.pop_back()
+		var new_card: Card = STANDARD_CARD_SCENE.instantiate()
+		new_card.global_position = spawn_pos
+		new_card.setup_card(next_card_data.rank, next_card_data.suit, next_card_data.cardbase)
+		target_hand.add_card(new_card)
+		update_stack_visual(true)
+		card_drawn.emit(new_card, next_card_data)
+		return new_card
 
 func draw_hand(amount: int) -> void:
 	for i in range(amount):

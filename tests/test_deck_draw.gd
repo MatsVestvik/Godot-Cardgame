@@ -10,6 +10,7 @@ func _run_test() -> void:
 	assert(game_scene != null, "game.tscn must exist")
 
 	var game_node = game_scene.instantiate()
+	game_node.use_game_cards_deck = false
 	root.add_child(game_node)
 
 	# Wait a frame for children to call _ready()

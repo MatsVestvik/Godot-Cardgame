@@ -1,21 +1,52 @@
 [gd_scene format=3 uid="uid://c6xk5t8rql6pn"]
 
-[ext_resource type="PackedScene" uid="uid://cb4bb1fh83ut2" path="res://scenes/deck.tscn" id="1_deck"]
-[ext_resource type="PackedScene" uid="uid://ku22yqqjt7nt" path="res://scenes/hand.tscn" id="2_hand"]
-[ext_resource type="PackedScene" path="res://scenes/table.tscn" id="3_table"]
+[ext_resource type="Script" uid="uid://cgxwmmcbj7ch4" path="res://scripts/game.gd" id="1_game_script"]
+[ext_resource type="Script" uid="uid://dk1u855a74po2" path="res://scripts/energy_manager.gd" id="2_energy_mgr_script"]
+[ext_resource type="PackedScene" uid="uid://cb4bb1fh83ut2" path="res://scenes/deck.tscn" id="3_deck"]
+[ext_resource type="PackedScene" uid="uid://ku22yqqjt7nt" path="res://scenes/hand.tscn" id="4_hand"]
+[ext_resource type="PackedScene" uid="uid://0sh7hd7m54bm" path="res://scenes/table.tscn" id="5_table"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_energy"]
+font_size = 10
+font_color = Color(1, 0.85, 0.3, 1)
+outline_size = 2
+outline_color = Color(0, 0, 0, 0.9)
 
 [node name="Game" type="Node2D" unique_id=789844159]
+position = Vector2(20, 9)
+script = ExtResource("1_game_script")
+
+[node name="EnergyManager" type="Node" parent="." unique_id=98124001]
+script = ExtResource("2_energy_mgr_script")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=429066829]
 position = Vector2(0, -25)
-zoom = Vector2(4, 4)
+zoom = Vector2(2, 2)
 
-[node name="Table" parent="." unique_id=1941291301 instance=ExtResource("3_table")]
-position = Vector2(0, -15)
+[node name="Table" parent="." unique_id=1941291301 instance=ExtResource("5_table")]
+position = Vector2(-19, -49)
 
-[node name="Deck" parent="." unique_id=1571640803 node_paths=PackedStringArray("target_hand") instance=ExtResource("1_deck")]
-position = Vector2(-127, 24)
+[node name="Deck" parent="." unique_id=1571640803 node_paths=PackedStringArray("target_hand") instance=ExtResource("3_deck")]
+position = Vector2(-246, 59)
 target_hand = NodePath("../Hand")
 
-[node name="Hand" parent="." unique_id=848955035 instance=ExtResource("2_hand")]
-position = Vector2(10, 35)
+[node name="Hand" parent="." unique_id=848955035 instance=ExtResource("4_hand")]
+position = Vector2(-21, 65)
+
+[node name="UI" type="CanvasGroup" parent="." unique_id=98124002]
+
+[node name="EnergyLabel" type="Label" parent="UI" unique_id=98124003]
+offset_left = -274.0
+offset_top = -176.0
+offset_right = -189.0
+offset_bottom = -160.0
+text = "Energy: 3/3"
+label_settings = SubResource("LabelSettings_energy")
+
+[node name="EndTurnButton" type="Button" parent="UI" unique_id=98124004]
+offset_left = 204.0
+offset_top = -179.0
+offset_right = 277.0
+offset_bottom = -159.0
+theme_override_font_sizes/font_size = 8
+text = "End Turn (Space)"
