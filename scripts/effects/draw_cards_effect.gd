@@ -1,7 +1,7 @@
 class_name DrawCardsEffect
 extends CardEffect
 
-@export var amount: int = 1
+@export var amount: int = 3
 
 func apply(context: Dictionary) -> void:
 	if context.has("deck") and context.deck != null:

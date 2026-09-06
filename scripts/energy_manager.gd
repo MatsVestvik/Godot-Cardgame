@@ -3,15 +3,16 @@ extends Node
 
 signal energy_changed(current: int, max_energy: int)
 
+@export var starting_energy: int = 3
 @export var base_energy: int = 3
 @export var energy_cap: int = 9
-@export var max_energy: int = 3
+@export var max_energy: int = 9
 
 var current_energy: int = 3
 
 func _ready() -> void:
-	max_energy = base_energy
-	current_energy = base_energy
+	max_energy = energy_cap
+	current_energy = starting_energy
 	energy_changed.emit(current_energy, max_energy)
 
 func can_afford(cost: int) -> bool:

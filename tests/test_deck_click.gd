@@ -7,6 +7,7 @@ func _run_test() -> void:
 	print("--- BEGIN DECK CLICK TEST ---")
 	var game_scene: PackedScene = load("res://scenes/game.tscn")
 	var game_node = game_scene.instantiate()
+	game_node.use_game_cards_deck = false
 	root.add_child(game_node)
 
 	await process_frame

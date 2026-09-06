@@ -6,7 +6,7 @@
 
 [sub_resource type="Resource" id="Resource_draw_effect"]
 script = ExtResource("1_draw_effect")
-amount = 1
+amount = 3
 
 [resource]
 script = ExtResource("3_card_res")
@@ -14,5 +14,5 @@ id = "draw_card"
 card_name = "Draw"
 energy_cost = 1
 art_texture = ExtResource("2_art")
-description = "Draw 1 card."
+description = "Draw 3 cards."
 effects = [SubResource("Resource_draw_effect")]

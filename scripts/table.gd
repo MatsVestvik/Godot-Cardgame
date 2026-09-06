@@ -79,9 +79,14 @@ func update_table_layout() -> void:
 		var tween := create_tween()
 		tween.tween_property(card, "position", target_pos, 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-func clear_table() -> Array[Node2D]:
+func clear_table(discard_to_deck: Node = null) -> Array[Node2D]:
 	var cleared: Array[Node2D] = played_cards.duplicate()
 	for card in played_cards:
-		remove_child(card)
+		if discard_to_deck != null and "card_data" in card and card.card_data != null:
+			if "discard_pile" in discard_to_deck:
+				discard_to_deck.discard_pile.append(card.card_data)
+		if card.get_parent() == self:
+			remove_child(card)
+		card.queue_free()
 	played_cards.clear()
 	return cleared
