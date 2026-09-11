@@ -1,13 +1,17 @@
 [gd_scene format=3 uid="uid://bf6o88a4oas63"]
 
-[ext_resource type="Script" uid="uid://oay1y2wcj7tg" path="res://scripts/game_card.gd" id="1_game_card_script"]
+[ext_resource type="Script" uid="uid://duoqmvaftr7fh" path="res://scripts/game_card.gd" id="1_game_card_script"]
 [ext_resource type="Texture2D" uid="uid://bws3rg7cai7yg" path="res://assets/card/basiccard.png" id="1_gnynm"]
-[ext_resource type="Texture2D" uid="uid://de57fqmx5lpxr" path="res://assets/card/draw.png" id="2_vothf"]
+[ext_resource type="Texture2D" uid="uid://uoobfio80oaw" path="res://resources/cards/cardArt.png" id="3_rd61d"]
 [ext_resource type="Texture2D" uid="uid://xbpjae4i0j43" path="res://assets/fonts/numbers.png" id="3_vothf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u5sy4"]
+atlas = ExtResource("3_rd61d")
+region = Rect2(0, 0, 72, 54)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ujbl2"]
 atlas = ExtResource("3_vothf")
-region = Rect2(9, 0, 9, 17)
+region = Rect2(0, 0, 90, 17)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gamecard"]
 size = Vector2(46, 64)
@@ -25,13 +29,19 @@ position = Vector2(1, 2)
 texture = ExtResource("1_gnynm")
 
 [node name="art" type="Sprite2D" parent="." unique_id=644368232]
-position = Vector2(1, -15)
-texture = ExtResource("2_vothf")
+position = Vector2(1, -11)
+texture = SubResource("AtlasTexture_u5sy4")
+hframes = 2
+vframes = 2
 
 [node name="energy cost" type="Sprite2D" parent="." unique_id=1162870657]
 position = Vector2(-9, 17)
 texture = SubResource("AtlasTexture_ujbl2")
+hframes = 10
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1945983494]
 position = Vector2(1, 2)
 shape = SubResource("RectangleShape2D_gamecard")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=534692]
+zoom = Vector2(6, 6)

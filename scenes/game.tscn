@@ -1,12 +1,46 @@
 [gd_scene format=3 uid="uid://c6xk5t8rql6pn"]
 
-[ext_resource type="Script" uid="uid://cgxwmmcbj7ch4" path="res://scripts/game.gd" id="1_game_script"]
-[ext_resource type="Script" uid="uid://dk1u855a74po2" path="res://scripts/energy_manager.gd" id="2_energy_mgr_script"]
 [ext_resource type="PackedScene" uid="uid://cb4bb1fh83ut2" path="res://scenes/deck.tscn" id="3_deck"]
 [ext_resource type="PackedScene" uid="uid://ku22yqqjt7nt" path="res://scenes/hand.tscn" id="4_hand"]
-[ext_resource type="PackedScene" uid="uid://0sh7hd7m54bm" path="res://scenes/table.tscn" id="5_table"]
 [ext_resource type="FontFile" uid="uid://xjgkyu08isb8" path="res://assets/fonts/PixelOperator8-Bold.ttf" id="6_p57ef"]
 [ext_resource type="PackedScene" uid="uid://ddmjnxkbvy8w2" path="res://scenes/enemy.tscn" id="7_u5sy4"]
+
+[sub_resource type="GDScript" id="GDScript_iywne"]
+script/source = "class_name EnergyManager
+extends Node
+
+signal energy_changed(current: int, max_energy: int)
+
+@export var starting_energy: int = 3
+@export var base_energy: int = 3
+@export var energy_cap: int = 9
+@export var max_energy: int = 9
+
+var current_energy: int = 3
+
+func _ready() -> void:
+	max_energy = energy_cap
+	current_energy = starting_energy
+	energy_changed.emit(current_energy, max_energy)
+
+func can_afford(cost: int) -> bool:
+	return current_energy >= cost
+
+func spend(cost: int) -> bool:
+	if can_afford(cost):
+		current_energy -= cost
+		energy_changed.emit(current_energy, max_energy)
+		return true
+	return false
+
+func gain(amount: int) -> void:
+	current_energy = min(current_energy + amount, energy_cap)
+	energy_changed.emit(current_energy, max_energy)
+
+func reset_energy() -> void:
+	current_energy = base_energy
+	energy_changed.emit(current_energy, max_energy)
+"
 
 [sub_resource type="LabelSettings" id="LabelSettings_energy"]
 font_size = 10
@@ -16,24 +50,20 @@ outline_color = Color(0, 0, 0, 0.9)
 
 [node name="Game" type="Node2D" unique_id=789844159]
 position = Vector2(20, 9)
-script = ExtResource("1_game_script")
 
 [node name="EnergyManager" type="Node" parent="." unique_id=98124001]
-script = ExtResource("2_energy_mgr_script")
+script = SubResource("GDScript_iywne")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=429066829]
 position = Vector2(0, -25)
 zoom = Vector2(2, 2)
 
-[node name="Table" parent="." unique_id=1941291301 instance=ExtResource("5_table")]
-position = Vector2(-19, -15)
-
-[node name="Deck" parent="." unique_id=1571640803 node_paths=PackedStringArray("target_hand") instance=ExtResource("3_deck")]
+[node name="Deck" parent="." unique_id=1571640803 instance=ExtResource("3_deck")]
 position = Vector2(-246, 59)
-target_hand = NodePath("../Hand")
 
 [node name="Hand" parent="." unique_id=848955035 instance=ExtResource("4_hand")]
 position = Vector2(-21, 65)
+script = null
 
 [node name="UI" type="CanvasGroup" parent="." unique_id=98124002]
 
