@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bf6o88a4oas63"]
 
-[ext_resource type="Script" path="res://scripts/game_card.gd" id="1_game_card_script"]
+[ext_resource type="Script" uid="uid://oay1y2wcj7tg" path="res://scripts/game_card.gd" id="1_game_card_script"]
 [ext_resource type="Texture2D" uid="uid://bws3rg7cai7yg" path="res://assets/card/basiccard.png" id="1_gnynm"]
 [ext_resource type="Texture2D" uid="uid://de57fqmx5lpxr" path="res://assets/card/draw.png" id="2_vothf"]
 [ext_resource type="Texture2D" uid="uid://xbpjae4i0j43" path="res://assets/fonts/numbers.png" id="3_vothf"]

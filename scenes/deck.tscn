@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://baggtqulty04u" path="res://scripts/deck.gd" id="1_deck_script"]
 [ext_resource type="Texture2D" uid="uid://dgf3b6t7bm7l6" path="res://assets/card/back.png" id="2_back_tex"]
+[ext_resource type="FontFile" uid="uid://cy1yqlpb8ejts" path="res://assets/fonts/PixelOperator8.ttf" id="3_gdbsr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_deck"]
 size = Vector2(23, 32)
@@ -34,6 +35,7 @@ offset_left = -15.0
 offset_top = 18.0
 offset_right = 15.0
 offset_bottom = 29.0
+theme_override_fonts/font = ExtResource("3_gdbsr")
 text = "52"
 label_settings = SubResource("LabelSettings_deck")
 horizontal_alignment = 1

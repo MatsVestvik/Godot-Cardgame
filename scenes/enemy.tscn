@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ddmjnxkbvy8w2"]
+
+[ext_resource type="Texture2D" uid="uid://bw2wbbnnmos0u" path="res://resources/enemy/snoopy.png" id="1_7p1mj"]
+
+[node name="enemy" type="Sprite2D" unique_id=1336542640]
+texture = ExtResource("1_7p1mj")
